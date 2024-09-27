@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  firstname   String
+  lastname    String
+  phonenumber String
+  address     String
+  email       String   @unique
+  password    String
+  createDate  DateTime @default(now()) @map("create_at")
+  updateDate  DateTime @updatedAt @map("update_at")
+  role        Role     @default(USER)
+
+  orders Orders[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Orders {
+  id Int @id @default(autoincrement())
+
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @unique @map("user_id")
+
+  createDate  DateTime @default(now()) @map("create_at")
+  totalAmount Decimal  @db.Decimal(10, 2)
+
+  order_detail Order_detail[]
+}
+
+model Menu_items {
+  id       Int    @id @default(autoincrement())
+  menuName String @map("menu_name")
+
+  category   Category_item @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId Int           @unique @map("category_id")
+
+  price       Decimal  @db.Decimal(10, 2)
+  description String
+  createDate  DateTime @default(now()) @map("create_at")
+  updateDate  DateTime @updatedAt @map("update_at")
+
+  order_detail Order_detail[]
+}
+
+model Category_item {
+  id           Int    @id @default(autoincrement())
+  categoryName String @map("category_name")
+
+  menu_items Menu_items[]
+}
+
+model Order_detail {
+  id Int @id @default(autoincrement())
+
+  order   Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId Int    @unique @map("oder_id")
+
+  item   Menu_items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId Int        @unique @map("item_id")
+}
