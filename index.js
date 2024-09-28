@@ -7,6 +7,7 @@ const handleError = require("./middleware/error");
 const notFound = require("./middleware/not-found");
 
 const authRouter = require("./routes/auth");
+const userRouter = require("./routes/user");
 
 
 app.use(morgan("dev"));
@@ -16,7 +17,8 @@ app.use(cors());
 
 
 app.use("/auth", authRouter);
-// app.use("/api", memberRouter);
+app.use("/user", userRouter);
+
 
 app.use(handleError);
 app.use('*', notFound);

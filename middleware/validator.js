@@ -81,7 +81,7 @@ const validateSchema = (schema) => (req,res,next)=>{
 
     }
 
-    req.body = value;
+    req.input = value;
     next();
 }
 

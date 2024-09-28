@@ -54,7 +54,7 @@ exports.login = async(req,res,next)=>{
 
     try{
 
-        const {email,password} = req.body
+        const {email,password} = req.input
 
        
          const user = await prisma.user.findFirst({
@@ -79,6 +79,7 @@ exports.login = async(req,res,next)=>{
          const payLoad = {
             user : {
                 id : user.id,
+                firstname : user.firstname,
                 email : user.email,
                 role : user.role
             }
