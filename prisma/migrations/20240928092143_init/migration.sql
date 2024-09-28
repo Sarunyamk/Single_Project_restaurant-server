@@ -22,7 +22,6 @@ CREATE TABLE `Orders` (
     `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `totalAmount` DECIMAL(10, 2) NOT NULL,
 
-    UNIQUE INDEX `Orders_user_id_key`(`user_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -36,7 +35,6 @@ CREATE TABLE `Menu_items` (
     `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `update_at` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `Menu_items_category_id_key`(`category_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -54,8 +52,6 @@ CREATE TABLE `Order_detail` (
     `oder_id` INTEGER NOT NULL,
     `item_id` INTEGER NOT NULL,
 
-    UNIQUE INDEX `Order_detail_oder_id_key`(`oder_id`),
-    UNIQUE INDEX `Order_detail_item_id_key`(`item_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
