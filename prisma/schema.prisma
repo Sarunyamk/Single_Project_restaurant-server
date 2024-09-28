@@ -37,7 +37,7 @@ model Orders {
   id Int @id @default(autoincrement())
 
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int  @unique @map("user_id")
+  userId Int  @map("user_id")
 
   createDate  DateTime @default(now()) @map("create_at")
   totalAmount Decimal  @db.Decimal(10, 2)
@@ -50,7 +50,7 @@ model Menu_items {
   menuName String @map("menu_name")
 
   category   Category_item @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId Int           @unique @map("category_id")
+  categoryId Int           @map("category_id")
 
   price       Decimal  @db.Decimal(10, 2)
   description String
@@ -71,8 +71,8 @@ model Order_detail {
   id Int @id @default(autoincrement())
 
   order   Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId Int    @unique @map("oder_id")
+  orderId Int    @map("oder_id")
 
   item   Menu_items @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  itemId Int        @unique @map("item_id")
+  itemId Int        @map("item_id")
 }
