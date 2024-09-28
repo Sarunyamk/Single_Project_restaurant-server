@@ -24,15 +24,7 @@ const registerAuthen = Joi.object({
                 .messages({
                     "string.empty" : "Address is required"
                 }),
-    username : Joi.string()               
-                .min(6)      
-                .max(30)    
-                .required()
-                .messages({
-                    "string.empty": "Username is required",                   
-                    "string.min": "Username must be at least 3 characters",
-                    "string.max": "Username must be no more than 30 characters"
-                }),
+    
     email: Joi.string()
                 .email({tlds : false})  
                 .required()
@@ -60,11 +52,7 @@ const registerAuthen = Joi.object({
 
 const loginAuthen = Joi.object({
 
-    username: Joi.string()            
-            .required()
-            .messages({
-                "string.empty": "Username is required",
-            }),
+    
     email: Joi.string()
             .email({tlds : false})  
             .required()
@@ -85,13 +73,15 @@ const loginAuthen = Joi.object({
 const validateSchema = (schema) => (req,res,next)=>{
 
     const {value,error} = schema.validate(req.body)
-
+   
     if(error){
-
+      
+        
         return createError(400,error.details[0].message)
+
     }
 
-    req.input = value;
+    req.body = value;
     next();
 }
 
