@@ -3,92 +3,63 @@
 const prisma = require("../config/prisma")
 const createError = require("../utils/createError")
 const jwt = require("jsonwebtoken")
+const bcryptjs = require("bcryptjs")
 
-exports.authenToken = (req,res,next)=>{
 
-    const {authorization} = req.headers
-
-    if (!authorization || !authorization.startsWith("Bearer ")) {
-        return next(createError(401, "Unauthorized"))
+exports.getProfile = async (req, res, next) => {
+    try {
+     
+      const userId = req.user.user.id;
+  
+     
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          id: true,
+          firstname: true,
+          lastname: true,
+          phonenumber: true,
+          address: true,
+          email: true,
+        },
+      });
+  
+     
+      if (!user) {
+        return createError(404, "User not found");
+      }
+  
+      
+      res.json(user);
+  
+    } catch (err) {
+      next(err); 
     }
+  };
 
-    const token = authorization.split(" ")[1] 
-    
-    if(!token){
-        return next(createError(401,"Unauthorized"))
+  exports.editProfile = async (req, res, next) => {
+    try {
+      const userId = Number(req.params.userId);  
+      const { firstname, lastname, phonenumber, address, email } = req.body;
+  
+      const checkUser = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+  
+      if (!checkUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: { firstname, lastname, phonenumber, address, email },
+      });
+  
+      res.json({ message: "Update success", user: updatedUser });
+    } catch (err) {
+      next(err);
     }
-   
-    jwt.verify(token,process.env.JWT_SECRET,(err,user)=>{
-
-        if(err){
-            return createError(401,"Unauthorized")
-        }
-        req.user = user
-        next()
-    })
-}
-
-exports.getProfile = async (req,res,next)=>{
-    try{
-
-        const userId = req.user.id;
-
-        if (!userId) {
-            return createError(400, "Invalid token or userId")
-        }
-
-        const user = await prisma.user.findUnique({
-            where : {
-                id : Number(userId)
-            },
-
-            select : {
-                id : true,
-                firstname : true,
-                lastname : true,
-                phonenumber : true,
-                address : true,
-                email : true
-            }
-        })
-
-        if(!user){
-
-            return createError(404,"User not found")
-        }
-        res.json(user)
-
-    }catch(err){
-
-        next(err)
-    }
-}
-
-exports.editProfile = async (req,res,next)=>{
-    try{
-
-        const userId = req.user.id
-
-        const {firstname,lastname,phonenumber,address,email,password} = req.body
-
-        const user = await prisma.user.update({
-
-            where : {
-                id : Number(userId)
-            },
-            data : {
-                firstname,
-                lastname,
-                phonenumber,
-                address,
-                email,
-                password
-            }
-        })
-        res.json("update success")
-
-    }catch(err){
-
-        next(err)
-    }
-}
+  };
+  

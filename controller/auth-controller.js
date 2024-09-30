@@ -8,8 +8,6 @@ const createError = require("../utils/createError")
 
 exports.register = async(req,res,next)=>{
 
-    console.log("hello")
-
     try{
 
         const {firstname,lastname,
@@ -28,7 +26,7 @@ exports.register = async(req,res,next)=>{
 
             return createError(400,"Email already exist!!")
         }
-        console.log("hwllo")
+       
         const hashPassword = await bcryptjs.hash(password,10);
         
         const newUser = await prisma.user.create({
@@ -40,9 +38,9 @@ exports.register = async(req,res,next)=>{
                 password : hashPassword
             }
         })
-        console.log('object')
+       
 
-        res.json({message :"Register success!!"})
+        res.json({newUser})
 
     }catch(err){
 
@@ -104,27 +102,27 @@ exports.login = async(req,res,next)=>{
     }
 }
 
-exports.currentUser = async(req,res,next)=>{
+// exports.currentUser = async(req,res,next)=>{
 
-    try{
+//     try{
 
-        const email = req.user.user.email
-        const member = await prisma.user.findFirst({
+//         const email = req.user.user.email
+//         const member = await prisma.user.findFirst({
 
-            where : {
-                email,
-            },
-            select : {
-                id : true,
-                email : true,
-                role : true
-            }
-        })
+//             where : {
+//                 email,
+//             },
+//             select : {
+//                 id : true,
+//                 email : true,
+//                 role : true
+//             }
+//         })
 
-        console.log(member)
-        res.json({member})
-    }catch(err){
+//         console.log(member)
+//         res.json({member})
+//     }catch(err){
 
-        next(err)
-    }
-}
+//         next(err)
+//     }
+// }

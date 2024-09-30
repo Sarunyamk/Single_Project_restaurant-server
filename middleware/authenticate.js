@@ -1,45 +1,35 @@
-const jwt = require('jsonwebtoken');
-const createError = require("../utils/createError");
 
+const  createError = require("../utils/createError")
+const jwt = require("jsonwebtoken")
 
-exports.authenticate = async(req,res,next)=>{
+exports.authenticate = (req,res,next)=>{
 
     try{
-
-        const authorization = req.headers.authorization;
-
-        //check ว่ามี authorization อยู่หรือไม่ และเริ่มด้วย bearer หรือไม่
-        if(!authorization || !authorization.startsWith("Bearer ")){
-
-            return createError(401,"Unauthorized")
-        }
-
-        // แยก token ออกมา
-        const token = authorization.split(" ")[1]
-
-        if(!token){
-
-            return createError(401,"Unauthorized")
+        //1. check header ว่ามี token หรือไม่
+        const authHeader = req.headers.authorization
+        
+        if(!authHeader){
+            
+            return createError(401,"Token missing")
         }
         
+        const token = authHeader.split(" ")[1]
+       
+        console.log(authHeader)
 
-        // verify token 
-        const jwtPayload = jwt.verify(token,process.env.JWT_SECRET);        
-
-        //check ว่า User มีในระบบไหม
-        const user = await userService.getUserById(jwtPayload.id);
-
-        if(!user){
-
-            return createError(401,"Unauthorized")
-        }
-
-        //ติด user ไว้ใน request
-        req.user = user;
-        next();
-
+        //2. decode verify token        
+        jwt.verify(token,process.env.JWT_SECRET,(err,decode)=>{
+            
+            if(err){
+                
+                return createError(401,"Token invalid")
+            }
+            
+            req.user = decode
+            next()
+        })
     }catch(err){
+
         next(err)
     }
 }
-
