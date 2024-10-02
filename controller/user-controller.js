@@ -2,8 +2,7 @@
 
 const prisma = require("../config/prisma")
 const createError = require("../utils/createError")
-const jwt = require("jsonwebtoken")
-const bcryptjs = require("bcryptjs")
+
 
 
 exports.getProfile = async (req, res, next) => {
