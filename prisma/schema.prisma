@@ -21,11 +21,12 @@ model User {
   address     String
   email       String   @unique
   password    String
-  createDate  DateTime @default(now()) @map("create_at")
-  updateDate  DateTime @updatedAt @map("update_at")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
   role        Role     @default(USER)
 
-  orders Orders[]
+  orders  Orders[]
+  comment Comment[]
 }
 
 enum Role {
@@ -39,7 +40,7 @@ model Orders {
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int  @map("user_id")
 
-  createDate  DateTime @default(now()) @map("create_at")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   totalAmount Decimal  @db.Decimal(10, 2)
 
   order_detail Order_detail[]
@@ -48,14 +49,15 @@ model Orders {
 model Menu_items {
   id       Int    @id @default(autoincrement())
   menuName String @map("menu_name")
+  image    String
 
   category   Category_item @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId Int           @map("category_id")
 
   price       Decimal  @db.Decimal(10, 2)
   description String
-  createDate  DateTime @default(now()) @map("create_at")
-  updateDate  DateTime @updatedAt @map("update_at")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
 
   order_detail Order_detail[]
 }
@@ -75,4 +77,21 @@ model Order_detail {
 
   item   Menu_items @relation(fields: [itemId], references: [id], onDelete: Cascade)
   itemId Int        @map("item_id")
+}
+
+model Comment {
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @map("user_id")
+
+  comment   String
+  rating    Rate
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+}
+
+enum Rate {
+  good
+  average
+  bad
 }

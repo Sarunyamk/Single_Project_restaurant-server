@@ -9,6 +9,7 @@ const notFound = require("./middleware/not-found");
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const menuRouter = require("./routes/menu");
+const adminRouter = require("./routes/admin");
 
 
 app.use(morgan("dev"));
@@ -20,6 +21,7 @@ app.use(cors());
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/menu", menuRouter);
+app.use("/admin", adminRouter);
 
 
 app.use(handleError);

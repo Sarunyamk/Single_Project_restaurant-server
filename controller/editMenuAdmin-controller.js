@@ -1,23 +1,109 @@
-exports.editProfile = async (req, res, next) => {
-    try {
-      const userId = Number(req.params.userId);  
-      const { firstname, lastname, phonenumber, address, email } = req.body;
-  
-      const checkUser = await prisma.user.findUnique({
-        where: { id: userId },
-      });
-  
-      if (!checkUser) {
-        return res.status(404).json({ message: "User not found" });
+
+const prisma = require("../config/prisma")
+const createError = require("../utils/createError")
+
+
+exports.showAllMenu = async (req, res, next) => {
+  try {
+    const menu = await prisma.menu_items.findMany({
+      select: {
+        id: true,
+        menuName: true,
+        price: true,
+        description: true,
+        category: { 
+          select: {
+            id: true,
+            categoryName: true 
+          }
+        }
       }
+    });
+
+    res.json(menu); 
+  } catch (err) {
+    next(err); 
+  }
+};
+exports.createMenu = async (req, res, next) => {
   
-      const updatedUser = await prisma.user.update({
-        where: { id: userId },
-        data: { firstname, lastname, phonenumber, address, email },
-      });
+  try{
+
+     const {menuName,image,price,description,categoryId} = req.body
+
+     const menu = await prisma.menu_items.findFirst({
+      where : {
+          menuName
+      }
+     })
+
+     if(menu){
+
+      return createError(400,"Menu alresdy exist!!")
+     }
+
+     const newMenu = await prisma.menu_items.create({
+      data : {
+          menuName,
+          image,
+          price,
+          description,
+          category : {
+            connect : {
+              id : Number(categoryId)
+            }
+          }
+      }
+     })
+
+     res.json({newMenu})
   
-      res.json({ message: "Update success", user: updatedUser });
-    } catch (err) {
-      next(err);
-    }
-  };
+  }catch(err){
+    next(err)
+  }
+
+};
+
+exports.updateMenu = async(req,res,next)=>{
+
+  try{
+
+      const {menuId} = req.params
+      const {menuName,image,price,description,categoryId} = req.body
+      
+      const menu = await prisma.menu_items.update({
+
+          where : {
+              id : Number(menuId)
+          },
+
+          data : {
+            menuName,image,price,description,categoryId
+          }
+      })
+
+
+      res.json({message : " update  success"})
+  }catch(err){
+      next(err)
+  }
+}
+
+exports.deleteMenu = async(req,res,next)=>{
+
+  try{
+
+      const {menuId} = req.params
+      console.log(menuId,"edfsdfsdfsd")
+      const menu = await prisma.menu_items.delete({
+
+          where : {
+              id : Number(menuId)
+          }
+      })
+      
+      res.json(`delete menu ${menuId}`)
+  }catch(err){
+      next(err)
+  }
+}

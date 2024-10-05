@@ -4,6 +4,7 @@ const prisma = require("../config/prisma")
 const bcryptjs = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const createError = require("../utils/createError")
+const userService = require("../services/user-service")
 
 
 exports.register = async(req,res,next)=>{
@@ -15,12 +16,7 @@ exports.register = async(req,res,next)=>{
             email,password} = req.body
         
 
-        const user = await prisma.user.findFirst({
-
-            where:{
-                email :email
-            }
-        })
+        const user = await userService.getUserByEmail(email)
 
         if(user){
 
@@ -55,13 +51,7 @@ exports.login = async(req,res,next)=>{
         const {email,password} = req.input
 
        
-         const user = await prisma.user.findFirst({
-
-             where:{
-                 email :email
-             }
-         })
-
+         const user = await userService.getUserByEmail(email)
          if(!user){
 
             return createError(400,"User not found!!")
@@ -107,17 +97,7 @@ exports.currentUser = async(req,res,next)=>{
     try{
 
         const email = req.user.user.email
-        const member = await prisma.user.findFirst({
-
-            where : {
-                email,
-            },
-            select : {
-                id : true,
-                email : true,
-                role : true
-            }
-        })
+        const member = await userService.getCurrentUserByEmail(email)
 
         console.log(member)
         res.json({member})
