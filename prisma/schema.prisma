@@ -14,19 +14,22 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  firstname   String
-  lastname    String
-  phonenumber String
-  address     String
-  email       String   @unique
-  password    String
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
-  role        Role     @default(USER)
+  id               Int       @id @default(autoincrement())
+  firstname        String
+  lastname         String
+  phonenumber      String
+  address          String
+  email            String    @unique
+  password         String
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  role             Role      @default(USER)
 
   orders  Orders[]
-  comment Comment[]
+  comment Comments[]
+  carts   Carts[]
 }
 
 enum Role {
@@ -37,13 +40,23 @@ enum Role {
 model Orders {
   id Int @id @default(autoincrement())
 
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int  @map("user_id")
+  user       User @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId Int  @map("customer_id")
 
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  totalAmount Decimal  @db.Decimal(10, 2)
+  cart   Carts @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId Int   @map("cart_id")
+
+  total     Decimal     @db.Decimal(10, 2)
+  status    OrderStatus @default(PENDING)
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
 
   order_detail Order_detail[]
+}
+
+enum OrderStatus {
+  SUCCESS
+  PENDING
+  CANCEL
 }
 
 model Menu_items {
@@ -51,8 +64,8 @@ model Menu_items {
   menuName String @map("menu_name")
   image    String
 
-  category   Category_item @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId Int           @map("category_id")
+  category   Category_items @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId Int            @map("category_id")
 
   price       Decimal  @db.Decimal(10, 2)
   description String
@@ -60,9 +73,10 @@ model Menu_items {
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
 
   order_detail Order_detail[]
+  cart_Items   Cart_Items[]
 }
 
-model Category_item {
+model Category_items {
   id           Int    @id @default(autoincrement())
   categoryName String @map("category_name")
 
@@ -73,25 +87,60 @@ model Order_detail {
   id Int @id @default(autoincrement())
 
   order   Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId Int    @map("oder_id")
+  orderId Int    @map("order_id")
 
   item   Menu_items @relation(fields: [itemId], references: [id], onDelete: Cascade)
   itemId Int        @map("item_id")
+  price  Decimal    @db.Decimal(10, 2)
+  count  Int        @default(1)
+  total  Decimal    @db.Decimal(10, 2)
 }
 
-model Comment {
-  id     Int  @id @default(autoincrement())
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int  @map("user_id")
+model Comments {
+  id         Int  @id @default(autoincrement())
+  user       User @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId Int  @map("customer_id")
 
   comment   String
-  rating    Rate
+  rating    Rate     @default(AVERAGE)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
 }
 
 enum Rate {
-  good
-  average
-  bad
+  GOOD
+  AVERAGE
+  BAD
+}
+
+model Carts {
+  id         Int  @id @default(autoincrement())
+  user       User @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId Int  @map("customer_id")
+
+  total      Decimal      @db.Decimal(10, 2)
+  createdAt  DateTime     @default(now()) @map("created_at") @db.Timestamp(0)
+  status     CartStatus   @default(PENDING)
+  Orders     Orders[]
+  cart_Items Cart_Items[]
+}
+
+enum CartStatus {
+  SUCCESS
+  PENDING
+  CANCEL
+}
+
+model Cart_Items {
+  id Int @id @default(autoincrement())
+
+  cart   Carts @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId Int   @map("cart_id")
+
+  item   Menu_items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId Int        @map("item_id")
+
+  price     Decimal  @db.Decimal(10, 2)
+  count     Int      @default(1)
+  total     Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
 }
