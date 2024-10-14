@@ -7,8 +7,8 @@ const { createCart, getCart, deleteCartItem, updateCartItem } = require("../cont
 
 router.post('/', createCart)
 router.get('/get-cart/:userId', getCart)
-router.delete('/delete-cart_item/:cartItemId', deleteCartItem)
 router.patch('/update-cart_item/:cartItemId', updateCartItem)
+router.delete('/delete-cart_item/:cartItemId', deleteCartItem)
 
 
 

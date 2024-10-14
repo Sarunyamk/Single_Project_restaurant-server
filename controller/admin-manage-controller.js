@@ -112,10 +112,10 @@ exports.deleteMenu = async (req, res, next) => {
     try {
 
         const { menuId } = req.params
-        console.log(menuId, "edfsdfsdfsd")
         const menu = await deleteMenuItem(menuId)
 
-        res.json(`delete menu ${menuId}`)
+        res.json({ message: 'Menu deleted successfully', menuId: menuId });
+
     } catch (err) {
         next(err)
     }

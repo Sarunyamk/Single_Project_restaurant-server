@@ -13,7 +13,13 @@ exports.confirmPayment = async (req, res, next) => {
         if (!customerId) {
             return res.status(400).json({ message: 'Customer ID is required' });
         }
-        const customerExists = await prisma.customers.findUnique({ where: { id: customerId } });
+
+        const customerExists = await prisma.user.findFirst({
+            where: {
+                id: customerId
+            }
+        });
+
         if (!customerExists) {
             return res.status(400).json({ message: 'Customer not found' });
         }
@@ -25,15 +31,11 @@ exports.confirmPayment = async (req, res, next) => {
             order,
         });
     } catch (err) {
-        // console.error('Error confirming payment:', error);
-
-        // if (error.message.includes('Cart not found')) {
-        //     return res.status(404).json({ message: 'Cart not found for this customer' });
-        // }
-
-        next(err)
+        console.error('Error during payment confirmation:', err.message); // แสดงข้อผิดพลาด
+        next(err); // ส่งต่อข้อผิดพลาดไปยัง middleware ที่จัดการ
     }
 };
+
 
 exports.getDashboardData = async (req, res, next) => {
     try {
@@ -48,7 +50,7 @@ exports.getDashboardData = async (req, res, next) => {
     }
 };
 
-
+//admin table order
 exports.getOrders = async (req, res, next) => {
     try {
         const orders = await getAllOrders();

@@ -7,29 +7,24 @@ const { getOrdersByUserId, getAllCommentByrating } = require("../services/commen
 exports.getOrders = async (req, res, next) => {
     try {
         const { customerId } = req.params;
-        const orders = await getOrdersByUserId(customerId)
+        const orders = await getOrdersByUserId(customerId);
+
+        // ใช้ JSON.stringify เพื่อดูข้อมูลที่ละเอียดของออร์เดอร์
+        console.log("Orders fetched for customer:", JSON.stringify(orders, null, 2));
+
         res.json(orders);
     } catch (err) {
-        next(err)
+        next(err);
     }
 };
 
-
-
-exports.addCommentsToOrders = async (req, res, next) => {
+exports.updateCommentStatus = async (req, res, next) => {
     try {
         const { comments } = req.body;
         const customerId = req.user.id;
 
-        if (!comments || comments.length === 0) {
-            return res.status(400).json({ message: 'Comment is required' });
-        }
-
         for (const data of comments) {
-            if (!data.orderId || !data.comment || !data.rating) {
-                return res.status(400).json({ message: 'orderId, comment, and rating are required' });
-            }
-
+            // ค้นหาคอมเมนต์ที่มีสถานะ PENDING
             const existingPendingComment = await prisma.comments.findFirst({
                 where: {
                     orderId: data.orderId,
@@ -42,11 +37,7 @@ exports.addCommentsToOrders = async (req, res, next) => {
                 return res.status(400).json({ message: 'Pending comment not found for order' });
             }
 
-            if (!['GOOD', 'AVERAGE', 'BAD'].includes(data.rating)) {
-                return res.status(400).json({ message: 'Invalid rating' });
-            }
-
-
+            // อัปเดตคอมเมนต์และเปลี่ยนสถานะเป็น SUCCESS
             await prisma.comments.update({
                 where: { id: existingPendingComment.id },
                 data: {
@@ -57,13 +48,16 @@ exports.addCommentsToOrders = async (req, res, next) => {
             });
         }
 
-        res.json({ message: 'Update comment success' });
+        res.json({ message: 'Comments updated and status changed to SUCCESS' });
     } catch (err) {
-        next(err)
+        console.error("Error updating comments:", err);
+        next(err);
     }
 };
 
 
+
+// show comment ที่ลูกค้าคอมเมนท์ เฉพาะ rating good
 exports.getAllComments = async (req, res, next) => {
     try {
         const comments = await getAllCommentByrating()

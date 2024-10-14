@@ -13,7 +13,7 @@ exports.createCart = async (req, res, next) => {
         let cart = null;
 
         if (!existingCart) {
-            // Create a new cart
+
             cart = await createCart({
                 customerId: customerId,
                 total: 0,
@@ -23,24 +23,24 @@ exports.createCart = async (req, res, next) => {
 
         const idd = cart?.id || existingCart.id;
 
-        // Check for existing cart item in the specific cart
+
         const findCartItems = await findCartItemByItemId(items.itemId, idd); // Make sure you pass `cartId`
 
         let updatedCartItems;
         let cartItem;
 
         if (findCartItems) {
-            // Update item quantity
+
             updatedCartItems = await updateCartItem(findCartItems, items);
         } else {
-            // Create new cart item
+
             cartItem = await createCartItem(items, idd);
         }
 
-        // Return the cart item that was updated or newly created
+
         const returnResp = cartItem || updatedCartItems;
 
-        // Aggregate total cart value
+
         const { _sum } = await prisma.cart_Items.aggregate({
             _sum: {
                 total: true
@@ -50,12 +50,9 @@ exports.createCart = async (req, res, next) => {
             }
         });
 
-        console.log(_sum.total, "totalAmount");
-
-        // Update total in the carts table
         await prisma.carts.update({
             where: { id: idd },
-            data: { total: _sum.total || 0 }, // Handle case where no total is found
+            data: { total: _sum.total || 0 },
         });
 
         res.status(201).json({ message: 'Cart created successfully', returnResp });
@@ -117,7 +114,7 @@ exports.deleteCartItem = async (req, res, next) => {
             },
             data: {
                 total: _sum.total || 0
-            }, // ถ้าไม่มี item เหลือใน cart ให้ตั้งค่าเป็น 0
+            },
         });
 
         res.json({ message: `delete item ${cartItemId} success` })
@@ -131,10 +128,8 @@ exports.updateCartItem = async (req, res, next) => {
         const { cartItemId } = req.params;
         const { count, price } = req.body;
 
-        // คำนวณราคาทั้งหมดใหม่
         const total = count * price;
 
-        // อัปเดตข้อมูลในฐานข้อมูล
         const updatedCartItem = await prisma.cart_Items.update({
             where: {
                 id: Number(cartItemId),
@@ -145,7 +140,6 @@ exports.updateCartItem = async (req, res, next) => {
             },
         });
 
-        // อัปเดทยอดรวมในตาราง cart
         const { cartId } = updatedCartItem;
         const { _sum } = await prisma.cart_Items.aggregate({
             _sum: {

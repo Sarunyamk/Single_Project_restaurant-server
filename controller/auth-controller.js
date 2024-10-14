@@ -129,7 +129,7 @@ exports.forgetPassword = async (req, res, next) => {
         const { email } = req.body;
         const user = await userService.getUserByEmail(email)
         if (!user) {
-            return createError(404, 'อีเมลไม่ถูกต้อง');
+            return createError(404, 'email not found');
         }
 
         const token = crypto.randomBytes(20).toString('hex');

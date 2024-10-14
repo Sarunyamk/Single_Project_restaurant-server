@@ -54,7 +54,7 @@ exports.beverageMenu = async (req, res, next) => {
 
 exports.getPopularMenus = async (req, res, next) => {
   try {
-    // ขั้นตอนที่ 1: ดึงยอดขายเมนูที่มียอด count มากที่สุดจาก order_detail
+    // ดึงยอดขายเมนูที่มียอด count มากที่สุดจาก order_detail
     const popularMenus = await prisma.order_detail.groupBy({
       by: ['itemId'],
       _sum: {
@@ -62,13 +62,12 @@ exports.getPopularMenus = async (req, res, next) => {
       },
       orderBy: {
         _sum: {
-          count: 'desc', // เรียงตาม count มากที่สุด
+          count: 'desc',
         },
       },
-      take: 5, // ดึงข้อมูลเมนูยอดนิยม 5 อันดับ
+      take: 5,
     });
 
-    // ขั้นตอนที่ 2: ดึงข้อมูลชื่อเมนูจากตาราง menu_items
     const menuItemsWithNames = await Promise.all(
       popularMenus.map(async (menu) => {
         const item = await prisma.menu_items.findUnique({
@@ -91,7 +90,7 @@ exports.getPopularMenus = async (req, res, next) => {
       })
     );
 
-    // ส่งข้อมูลกลับในรูปแบบ JSON
+
     res.json(menuItemsWithNames);
   } catch (err) {
     next(err)

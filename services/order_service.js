@@ -17,6 +17,11 @@ exports.createOrderFromCart = async (customerId) => {
             throw new Error('Cart not found');
         }
 
+        // ตรวจสอบว่ามี Cart_Items หรือไม่
+        if (cart.cart_Items.length === 0) {
+            throw new Error('No items in the cart to create an order.');
+        }
+
         // สร้าง Order ใหม่จากข้อมูลใน Cart
         const order = await prisma.orders.create({
             data: {
@@ -25,6 +30,7 @@ exports.createOrderFromCart = async (customerId) => {
                 status: 'PENDING', // สถานะเริ่มต้นเป็น PENDING
             },
         });
+
 
         // เพิ่มรายการ Order Detail จาก Cart_Items
         for (const cartItem of cart.cart_Items) {
@@ -39,6 +45,7 @@ exports.createOrderFromCart = async (customerId) => {
             });
         }
 
+
         // อัปเดตสถานะของ Cart เป็น SUCCESS หลังจากสร้าง order สำเร็จ
         await prisma.carts.update({
             where: { id: cart.id },
@@ -46,7 +53,6 @@ exports.createOrderFromCart = async (customerId) => {
                 status: 'SUCCESS', // ตั้งค่า status เป็น SUCCESS
             },
         });
-
 
         // ลบรายการ Cart_Items หลังจากย้ายข้อมูลไป Order Detail
         await prisma.cart_Items.deleteMany({
@@ -62,11 +68,13 @@ exports.createOrderFromCart = async (customerId) => {
             },
         });
 
+
         return order;
     } catch (error) {
         throw new Error("Error creating order from cart: " + error.message);
     }
 };
+
 
 
 exports.getTodaySales = async () => {
