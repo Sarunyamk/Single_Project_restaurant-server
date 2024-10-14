@@ -43,20 +43,32 @@ model Orders {
   user       User @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId Int  @map("customer_id")
 
-  cart   Carts @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  cartId Int   @map("cart_id")
-
-  total     Decimal     @db.Decimal(10, 2)
-  status    OrderStatus @default(PENDING)
-  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
+  total       Decimal     @db.Decimal(10, 2)
+  status      OrderStatus @default(PENDING)
+  imageQRCode String?     @map("image_QR-code")
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
 
   order_detail Order_detail[]
+  comment      Comments[]
 }
 
 enum OrderStatus {
   SUCCESS
   PENDING
   CANCEL
+}
+
+model Order_detail {
+  id Int @id @default(autoincrement())
+
+  order   Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId Int    @map("order_id")
+
+  item   Menu_items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId Int        @map("item_id")
+  price  Decimal    @db.Decimal(10, 2)
+  count  Int        @default(1)
+  total  Decimal    @db.Decimal(10, 2)
 }
 
 model Menu_items {
@@ -83,27 +95,18 @@ model Category_items {
   menu_items Menu_items[]
 }
 
-model Order_detail {
-  id Int @id @default(autoincrement())
-
-  order   Orders @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId Int    @map("order_id")
-
-  item   Menu_items @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  itemId Int        @map("item_id")
-  price  Decimal    @db.Decimal(10, 2)
-  count  Int        @default(1)
-  total  Decimal    @db.Decimal(10, 2)
-}
-
 model Comments {
   id         Int  @id @default(autoincrement())
   user       User @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId Int  @map("customer_id")
 
-  comment   String
-  rating    Rate     @default(AVERAGE)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  order   Orders @relation(fields: [orderId], references: [id], onDelete: Cascade) // เพิ่ม orderId
+  orderId Int    @map("order_id")
+
+  comment   String?
+  rating    Rate?         @default(AVERAGE)
+  status    CommentStatus @default(PENDING)
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
 }
 
 enum Rate {
@@ -112,15 +115,20 @@ enum Rate {
   BAD
 }
 
+enum CommentStatus {
+  PENDING
+  SUCCESS
+}
+
 model Carts {
   id         Int  @id @default(autoincrement())
   user       User @relation(fields: [customerId], references: [id], onDelete: Cascade)
   customerId Int  @map("customer_id")
 
-  total      Decimal      @db.Decimal(10, 2)
-  createdAt  DateTime     @default(now()) @map("created_at") @db.Timestamp(0)
-  status     CartStatus   @default(PENDING)
-  Orders     Orders[]
+  total     Decimal    @db.Decimal(10, 2)
+  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp(0)
+  status    CartStatus @default(PENDING)
+
   cart_Items Cart_Items[]
 }
 

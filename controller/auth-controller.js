@@ -7,7 +7,7 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
 const createError = require("../utils/createError")
-const userService = require("../services/user-service")
+const { getUserByEmail, createNewUser, getCurrentUserByEmail } = require("../services/user-service")
 
 
 exports.register = async (req, res, next) => {
@@ -19,7 +19,7 @@ exports.register = async (req, res, next) => {
             email, password } = req.body
 
 
-        const user = await userService.getUserByEmail(email)
+        const user = await getUserByEmail(email)
 
         if (user) {
 
@@ -28,16 +28,8 @@ exports.register = async (req, res, next) => {
 
         const hashPassword = await bcryptjs.hash(password, 10);
 
-        const newUser = await prisma.user.create({
-
-            data: {
-                firstname, lastname,
-                phonenumber, address,
-                email,
-                password: hashPassword
-            }
-        })
-
+        const newUser = await createNewUser(hashPassword, firstname, lastname,
+            phonenumber, address, email)
 
         res.json({ newUser })
 
@@ -54,7 +46,7 @@ exports.login = async (req, res, next) => {
         const { email, password } = req.body
 
 
-        const user = await userService.getUserByEmail(email)
+        const user = await getUserByEmail(email)
         if (!user) {
 
             return createError(400, "User not found!!")
@@ -72,9 +64,11 @@ exports.login = async (req, res, next) => {
                 id: user.id,
                 firstname: user.firstname,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                address: user.address
             }
         }
+        console.log(payLoad, "payload")
 
         //create token
         const genToken = jwt.sign(payLoad, process.env.JWT_SECRET, { expiresIn: "1d" })
@@ -100,7 +94,7 @@ exports.currentUser = async (req, res, next) => {
     try {
 
         const email = req.user.user.email
-        const user = await userService.getCurrentUserByEmail(email)
+        const user = await getCurrentUserByEmail(email)
 
         console.log(user)
         res.json({ user })
@@ -124,7 +118,7 @@ const sendResetEmail = async (email, token) => {
         from: process.env.EMAIL_USER,
         to: email,
         subject: 'Reset Your Password',
-        text: `คลิกที่ลิงก์นี้เพื่อรีเซ็ตรหัสผ่านของคุณ: http://localhost:5173/reset-password/${token}`,
+        text: `Click this link to reset your password.: http://localhost:5173/reset-password/${token}`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -133,17 +127,12 @@ const sendResetEmail = async (email, token) => {
 exports.forgetPassword = async (req, res, next) => {
     try {
         const { email } = req.body;
-        console.log(req.body, "fdgdfgdf")
         const user = await userService.getUserByEmail(email)
-        console.log('user :>> ', user);
-
         if (!user) {
             return createError(404, 'อีเมลไม่ถูกต้อง');
         }
 
         const token = crypto.randomBytes(20).toString('hex');
-
-        console.log('token :>> ', token);
         const expiry = new Date(Date.now() + 3600000);
 
         await prisma.user.update({
@@ -155,9 +144,8 @@ exports.forgetPassword = async (req, res, next) => {
         });
 
         await sendResetEmail(email, token);
-        console.log("object")
 
-        res.json({ message: 'ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลแล้ว', tokenEmail: token });
+        res.json({ message: 'The password reset link has been sent to your email.', tokenEmail: token });
     } catch (error) {
         next(error);
     }
@@ -166,8 +154,6 @@ exports.forgetPassword = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
     try {
         const { token } = req.params;
-
-        console.log('token :>> ', req.params);
         const { password } = req.body;
 
         const user = await prisma.user.findFirst({
@@ -194,7 +180,7 @@ exports.resetPassword = async (req, res, next) => {
             },
         });
 
-        res.json({ message: 'รีเซ็ตรหัสผ่านสำเร็จแล้ว' });
+        res.json({ message: 'Your password has been successfully reset.' });
     } catch (error) {
         next(error);
     }
