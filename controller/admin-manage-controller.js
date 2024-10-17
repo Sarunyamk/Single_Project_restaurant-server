@@ -9,15 +9,14 @@ const path = require('path');
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-const { showAllMenuItem, updateMenuItem, deleteMenuItem } = require('../services/menu_items-service')
-const { getCategoryNameBycategoryId } = require('../services/category_items-service')
+const { showAllMenuItem, updateMenuItem, deleteMenuItem, getCategoryNameBycategoryId } = require('../services/menu_items-service')
+
 
 
 
 exports.showAllMenu = async (req, res, next) => {
     try {
         const menu = await showAllMenuItem();
-
         res.json(menu);
     } catch (err) {
         next(err);
@@ -43,18 +42,16 @@ exports.createMenu = async (req, res, next) => {
         const { menuName, price, description, categoryId } = req.body;
         const file = req.file; // รับไฟล์จาก multer
 
-        // ตรวจสอบว่ามีไฟล์และข้อมูลที่จำเป็น
         if (!menuName || !price || !description || !categoryId || !file) {
-            return res.status(400).json({ message: 'All fields are required.' });
+            return createError(400, 'Please provide all required fields.');
         }
 
-        // ตรวจสอบว่ามีเมนูนี้อยู่แล้วหรือไม่
         const existingMenu = await prisma.menu_items.findFirst({
             where: { menuName },
         });
 
         if (existingMenu) {
-            return res.status(400).json({ message: 'Menu with this name already exists.' });
+            return createError(400, 'Menu name already exists.');
         }
 
         // อัปโหลดไฟล์ไปยัง Cloudinary
@@ -68,20 +65,21 @@ exports.createMenu = async (req, res, next) => {
         const newMenu = await prisma.menu_items.create({
             data: {
                 menuName,
-                image: uploadResponse.secure_url, // URL ของภาพที่อัปโหลด
+                image: uploadResponse.secure_url,
                 price,
                 description,
                 category: {
-                    connect: { id: Number(categoryId) },
+                    connect: {
+                        id: Number(categoryId)
+                    },
                 },
             },
         });
 
-        res.status(201).json({ newMenu });
+        res.json({ newMenu });
     } catch (err) {
         next(err);
     } finally {
-        // ลบไฟล์ที่อัปโหลดบนเซิร์ฟเวอร์ออกหลังจากการอัปโหลดเสร็จ
         if (req.file?.path) {
             fs.unlink(req.file.path, (err) => {
                 if (err) console.error('Error removing file:', err);

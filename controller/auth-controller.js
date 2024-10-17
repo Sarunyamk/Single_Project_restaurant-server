@@ -95,8 +95,6 @@ exports.currentUser = async (req, res, next) => {
 
         const email = req.user.user.email
         const user = await getCurrentUserByEmail(email)
-
-        console.log(user)
         res.json({ user })
     } catch (err) {
 
@@ -127,7 +125,7 @@ const sendResetEmail = async (email, token) => {
 exports.forgetPassword = async (req, res, next) => {
     try {
         const { email } = req.body;
-        const user = await userService.getUserByEmail(email)
+        const user = await getUserByEmail(email)
         if (!user) {
             return createError(404, 'email not found');
         }
@@ -166,7 +164,7 @@ exports.resetPassword = async (req, res, next) => {
         });
 
         if (!user) {
-            return res.status(400).json({ message: 'Token ไม่ถูกต้องหรือหมดอายุ' });
+            return createError(404, 'Invalid token');
         }
 
         const hashedPassword = await bcryptjs.hash(password, 10);

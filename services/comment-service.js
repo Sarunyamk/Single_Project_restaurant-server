@@ -42,7 +42,37 @@ exports.getAllCommentByrating = () => {
         },
         orderBy: {
             createdAt: 'desc'
-        }
+        },
+        take: 10
     });
 
 }
+
+
+
+exports.getMenuItemComments = async (menuItemId) => {
+    return prisma.comments.findMany({
+        where: {
+            status: "SUCCESS",
+            order: {
+                order_detail: {
+                    some: {
+                        itemId: menuItemId,  // ตรวจสอบว่ามีรายการนี้ในรายละเอียดออเดอร์
+                    },
+                },
+            },
+        },
+        include: {
+            user: {
+                select: {
+                    firstname: true,
+                    lastname: true,  // ดึงข้อมูลชื่อผู้ใช้ที่คอมเมนต์
+                },
+            },
+        },
+        orderBy: {
+            createdAt: 'desc',
+        }
+
+    });
+};

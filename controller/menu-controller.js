@@ -8,7 +8,6 @@ const { showAllMenuItem, getCategoryMain, getCategorySalad,
 exports.showAllMenu = async (req, res, next) => {
   try {
     const menu = await showAllMenuItem();
-
     res.json(menu);
   } catch (err) {
     next(err);
@@ -18,7 +17,6 @@ exports.showAllMenu = async (req, res, next) => {
 exports.mainMenu = async (req, res, next) => {
   try {
     const mainMenu = await getCategoryMain()
-
     res.json(mainMenu);
   } catch (err) {
     next(err);
@@ -45,7 +43,6 @@ exports.sandwichSnackMenu = async (req, res, next) => {
 exports.beverageMenu = async (req, res, next) => {
   try {
     const bevMenu = await getCategoryBeverage()
-
     res.json(bevMenu);
   } catch (err) {
     next(err);
@@ -65,13 +62,18 @@ exports.getPopularMenus = async (req, res, next) => {
           count: 'desc',
         },
       },
-      take: 5,
+      take: 8,
     });
 
     const menuItemsWithNames = await Promise.all(
       popularMenus.map(async (menu) => {
         const item = await prisma.menu_items.findUnique({
-          where: { id: menu.itemId },
+          where: {
+            id: menu.itemId,
+            categoryId: {
+              not: 5,
+            },
+          },
         });
 
         // ดึงข้อมูลรายละเอียดการสั่งซื้อทั้งหมดจาก order_detail ที่เกี่ยวกับเมนูนี้

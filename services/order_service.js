@@ -27,7 +27,7 @@ exports.createOrderFromCart = async (customerId) => {
             data: {
                 customerId: cart.customerId,
                 total: cart.total,
-                status: 'PENDING', // สถานะเริ่มต้นเป็น PENDING
+                status: 'SUCCESS', // สถานะเริ่มต้นเป็น PENDING
             },
         });
 
@@ -67,6 +67,13 @@ exports.createOrderFromCart = async (customerId) => {
                 status: 'PENDING',
             },
         });
+
+        // await prisma.orders.update({
+        //     where: { id: order.id },
+        //     data: {
+        //         status: 'SUCCESS', // ตั้งค่า status เป็น SUCCESS
+        //     },
+        // });
 
 
         return order;

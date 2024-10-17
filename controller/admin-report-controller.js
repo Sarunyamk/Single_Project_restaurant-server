@@ -1,7 +1,8 @@
-const prisma = require("../config/prisma")
 const createError = require("../utils/createError")
 
-const { getAllComment, getAllMenuSaleUnit } = require("../services/admin-report-service")
+const prisma = require("../config/prisma")
+
+const { getAllComment, getAllMenuSaleUnit, getAllSaleByDate } = require("../services/admin-report-service")
 
 exports.reportAllComments = async (req, res, next) => {
     try {
@@ -42,5 +43,28 @@ exports.reportAllMenuUnit = async (req, res) => {
         res.json(sortedReport);
     } catch (err) {
         next(err);
+    }
+};
+
+exports.getSalesReportByDate = async (req, res, next) => {
+    try {
+        const { startDate, endDate } = req.body;
+        console.log('Received startDate:', startDate, 'endDate:', endDate); // เช็คค่าที่ได้รับ
+
+        if (!startDate || !endDate) {
+            throw new Error('Start date and End date are required');
+        }
+
+        const orders = await getAllSaleByDate(startDate, endDate)
+
+        const totalSales = orders.reduce((total, order) => total + Number(order.total), 0);
+
+        res.json({
+            orders,
+            totalSales,
+        });
+    } catch (error) {
+        console.error('Error generating sales report:', error); // เพิ่มการ log error
+        next(error);
     }
 };

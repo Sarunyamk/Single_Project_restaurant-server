@@ -5,13 +5,21 @@ const registerAuthen = Joi.object({
 
     firstname: Joi.string()
         .required()
+        .pattern(/^[a-zA-Zก-๙]+$/)
+        .max(20)
         .messages({
-            "string.empty": "Firstname is required"
+            "string.empty": "please enter your 'Firstname'",
+            "string.pattern.base": "Firstname can only contain letters (Thai or English)",
+            "string.max": "Firstname must not exceed 20 characters"
         }),
     lastname: Joi.string()
         .required()
+        .pattern(/^[a-zA-Zก-๙]+$/)
+        .max(20)
         .messages({
-            "string.empty": "Lastname is required"
+            "string.empty": "please enter your 'Lastname'",
+            "string.pattern.base": "Lastname can only contain letters (Thai or English)",
+            "string.max": "Lastname must not exceed 20 characters"
         }),
     phonenumber: Joi.string()
         .required()

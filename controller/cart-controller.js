@@ -21,10 +21,10 @@ exports.createCart = async (req, res, next) => {
             });
         }
 
-        const idd = cart?.id || existingCart.id;
+        const cartId = cart?.id || existingCart.id;
 
 
-        const findCartItems = await findCartItemByItemId(items.itemId, idd); // Make sure you pass `cartId`
+        const findCartItems = await findCartItemByItemId(items.itemId, cartId); // Make sure you pass `cartId`
 
         let updatedCartItems;
         let cartItem;
@@ -34,7 +34,7 @@ exports.createCart = async (req, res, next) => {
             updatedCartItems = await updateCartItem(findCartItems, items);
         } else {
 
-            cartItem = await createCartItem(items, idd);
+            cartItem = await createCartItem(items, cartId);
         }
 
 
@@ -46,15 +46,16 @@ exports.createCart = async (req, res, next) => {
                 total: true
             },
             where: {
-                cartId: idd
+                cartId: cartId
             }
         });
 
         await prisma.carts.update({
-            where: { id: idd },
+            where: { id: cartId },
             data: { total: _sum.total || 0 },
         });
 
+        // ใช้res ในการช่วยเช็คของหน้าบ้านด้วย
         res.status(201).json({ message: 'Cart created successfully', returnResp });
     } catch (err) {
         next(err);
@@ -66,11 +67,6 @@ exports.getCart = async (req, res, next) => {
     try {
         const { userId } = req.params;
         const cart = await getCartByCustomerId(userId);
-
-        if (!cart) {
-            return createError(404, "Cart not found");
-        }
-
         res.json(cart);
     } catch (err) {
         next(err);
@@ -88,7 +84,7 @@ exports.deleteCartItem = async (req, res, next) => {
         });
 
         if (!cartItem) {
-            return res.status(404).json({ message: 'Cart item not found' });
+            return createError(404, "Cart item not found");
         }
 
         const cartId = cartItem.cartId;

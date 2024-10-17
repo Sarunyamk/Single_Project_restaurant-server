@@ -1,6 +1,11 @@
 const prisma = require("../config/prisma")
 const createError = require("../utils/createError")
 
+const omise = require('omise')({
+    publicKey: process.env.OMISE_PUBLIC_KEY,
+    secretKey: process.env.OMISE_SECRET_KEY,
+});
+
 const { createOrderFromCart, getTodaySales } = require("../services/order_service");
 
 const { getAllOrders, updateOrderStatusById, deleteOrderById } = require("../services/order_service");
@@ -11,7 +16,7 @@ exports.confirmPayment = async (req, res, next) => {
         const { customerId } = req.body;
 
         if (!customerId) {
-            return res.status(400).json({ message: 'Customer ID is required' });
+            return createError(400, 'Customer ID is required');
         }
 
         const customerExists = await prisma.user.findFirst({
@@ -21,7 +26,7 @@ exports.confirmPayment = async (req, res, next) => {
         });
 
         if (!customerExists) {
-            return res.status(400).json({ message: 'Customer not found' });
+            return createError(400, 'Customer not found');
         }
 
         const order = await createOrderFromCart(customerId); // สร้าง Order จาก Cart
@@ -32,7 +37,7 @@ exports.confirmPayment = async (req, res, next) => {
         });
     } catch (err) {
         console.error('Error during payment confirmation:', err.message); // แสดงข้อผิดพลาด
-        next(err); // ส่งต่อข้อผิดพลาดไปยัง middleware ที่จัดการ
+        next(err);
     }
 };
 

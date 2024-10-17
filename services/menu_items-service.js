@@ -20,6 +20,17 @@ exports.showAllMenuItem = () => {
     })
 }
 
+exports.getCategoryNameBycategoryId = () => {
+
+    return prisma.category_items.findMany({
+
+        select: {
+            id: true,
+            categoryName: true
+        }
+    })
+}
+
 exports.updateMenuItem = (menuId, menuName, price, description) => {
 
     return prisma.menu_items.update({

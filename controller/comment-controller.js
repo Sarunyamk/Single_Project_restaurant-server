@@ -1,16 +1,13 @@
 const prisma = require("../config/prisma")
 const createError = require("../utils/createError")
 
-const { getOrdersByUserId, getAllCommentByrating } = require("../services/comment-service")
+const { getOrdersByUserId, getAllCommentByrating, getMenuItemComments } = require("../services/comment-service")
 
 // get orders เพื่อให้ลูกค้าคอมเมนท์ สำหรับ ออเดอร์ที่ชำระเงินแล้วเท่านั้น นาจา
 exports.getOrders = async (req, res, next) => {
     try {
         const { customerId } = req.params;
         const orders = await getOrdersByUserId(customerId);
-
-        // ใช้ JSON.stringify เพื่อดูข้อมูลที่ละเอียดของออร์เดอร์
-        console.log("Orders fetched for customer:", JSON.stringify(orders, null, 2));
 
         res.json(orders);
     } catch (err) {
@@ -69,5 +66,24 @@ exports.getAllComments = async (req, res, next) => {
         res.json(comments);
     } catch (err) {
         next(err)
+    }
+};
+
+
+
+
+exports.ShowCommentReview = async (req, res, next) => {
+    const { itemId } = req.params;  // รับ itemId จาก URL
+
+    try {
+        const comments = await getMenuItemComments(parseInt(itemId, 10));
+
+        if (!comments || comments.length === 0) {
+            return createError(404, 'No comment found');
+        }
+
+        res.json(comments);
+    } catch (err) {
+        next(err);
     }
 };

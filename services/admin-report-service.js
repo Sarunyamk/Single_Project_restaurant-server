@@ -33,3 +33,36 @@ exports.getAllMenuSaleUnit = () => {
         },
     });
 }
+
+exports.getAllSaleByDate = (startDate, endDate) => {
+    return prisma.orders.findMany({
+        where: {
+            status: 'SUCCESS',
+            createdAt: {
+                gte: new Date(startDate), // Start date
+                lte: new Date(endDate),   // End date
+            },
+        },
+        select: {
+            id: true, // ดึง Order ID ด้วย
+            total: true, // ดึงยอดขายรวม
+            createdAt: true, // ดึงวันที่ของออเดอร์
+            user: {
+                select: {
+                    firstname: true,
+                    phonenumber: true,
+                },
+
+            },
+            order_detail: {
+                select: {
+                    item: {
+                        select: {
+                            menuName: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+};
