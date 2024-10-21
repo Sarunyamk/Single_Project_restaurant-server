@@ -11,9 +11,6 @@ const upload = multer({ storage });
 
 const { showAllMenuItem, updateMenuItem, deleteMenuItem, getCategoryNameBycategoryId } = require('../services/menu_items-service')
 
-
-
-
 exports.showAllMenu = async (req, res, next) => {
     try {
         const menu = await showAllMenuItem();

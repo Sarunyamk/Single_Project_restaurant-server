@@ -15,7 +15,8 @@ CLOUDINARY_API_SECRET
 
 ---
 ## API Documentation
-### Endpoint http://localhost:3000/auth
+### Endpoint role User-Admin 
+http://localhost:3000/auth
 
 |  Name  |Method |Path |Authen | Params | Query | Body |
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
@@ -25,13 +26,15 @@ CLOUDINARY_API_SECRET
 |Forget password|post|/forget-password|-|-|-|{ email }
 |Reset password|post|/reset-password/:token|Y|-|-|{ password }
 
-### Endpoint http://localhost:3000/user
+### Endpoint role User
+http://localhost:3000/user
 |Name|Method |Path |Authen | Params | Query | Body |
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
 |Show Profile User|get|-|Y|-|-|-|
 |Edit Profile User|patch|/edit-profile/:userId|Y|Y|-|{ firstname, lastname, phonenumber, address, email }
 
-### Endpoint http://localhost:3000/menu
+### Endpoint role User-Admin 
+http://localhost:3000/menu
 |Name|Method |Path |Authen | Params | Query | Body |
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
 |Show all Menu|get|/allmenu|-|-|-|-|
@@ -41,47 +44,60 @@ CLOUDINARY_API_SECRET
 |Show Category Beverage|get|/beverage-menu|-|-|-|-|
 |Show Popular Menu|get|/popular|-|-|-|-|
 
-### Endpoint http://localhost:3000/comment
+### Endpoint role User-Admin 
+http://localhost:3000/comment
 |Name|Method |Path |Authen | Params | Query | Body |
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
 |Show order success|get|/user/:customerId|-|Y|-|-|
-|Create comment|post|-|Y|-|-|{ comments }|
+|Create comment|put|/update-comment|Y|-|-|{ comments,rating }|
 |Show comment on page|get|/show-comment|-|-|-|-|
+|Show comment review on menu|get|/review-comment/:itemId|-|Y|-|-|
 
-### Endpoint http://localhost:3000/admin/manage
-|Name|Method |Path |Authen | Params | Query | Body |
-|:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
-|Show All Menu|get|/allmenu|-|-|-|-|
-|Get category name for create menu|get|/getCategoryName|-|-|-|-|
-|Admin create Menu|post|/create-menu|-|-|-|{menuName,image,
-price,description,categoryId} |
-|Admin edit Menu|patch|/edit-menu/:menuId|Y|Y|-|{menuName,price,description} |
-|Admin delete Menu|delete|/delete-menu/:menuId|Y|Y|-|-|
-
-### Endpoint http://localhost:3000/cart
+### Endpoint role User
+http://localhost:3000/cart
 |Name|Method |Path |Authen | Params | Query | Body |
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
 |Create cart |post|-|-|-|-|{ customerId, items } |
 |Show detail cart |get|/get-cart/:userId|-|Y|-|-|
 |Update cart |patch|/update-cart_item/:cartItemId|-|Y|-|{ count, price } |
 |delete cart|delete|/delete-cart_item/:cartItemId|-|Y|-|-|
-
-### Endpoint http://localhost:3000/order
+### Endpoint role User
+http://localhost:3000/payment
 |Name|Method |Path |Authen | Params | Query | Body |
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
-|Payment|post|/confirm-payment|-|-|-|{ customerId }|
+|Create Payment|post|/create-payment-intent|-|-|-|{ amount } |
+|Confirm Payment|post|/confirm-payment|-|-|-|{customerId } |
+
+### Endpoint role Admin 
+http://localhost:3000/admin/manage
+|Name|Method |Path |Authen | Params | Query | Body |
+|:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
+|Show All Menu|get|/allmenu|-|-|-|-|
+|Get category name for create menu|get|/getCategoryName|-|-|-|-|
+|Admin create Menu|post|/create-menu|-|-|-|{menuName,image,price,description,categoryId} |
+|Admin edit Menu|patch|/edit-menu/:menuId|Y|Y|-|{menuName,price,description} |
+|Admin delete Menu|delete|/delete-menu/:menuId|Y|Y|-|-|
+
+
+### Endpoint role Admin
+http://localhost:3000/order
+|Name|Method |Path |Authen | Params | Query | Body |
+|:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
 |Show Dashboard Order|get|/dashboard|-|-|-|-|
-|Admin show al order|get|-|-|-|-|-|
+|Admin show all order|get|-|-|-|-|-|
 |Admin update status order|put|/update/:orderId|-|Y|-|{ status }|
 |Admin delete order|delete|/delete/:orderId|-|Y|-|-|
 
-### Endpoint http://localhost:3000/admin/report
+### Endpoint role Admin
+http://localhost:3000/admin/report
 |Name|Method |Path |Authen | Params | Query | Body |
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
 |Show report comment|get|/all-comment|-|-|-|-|
 |Show report menu unit|get|/menu-unit|-|-|-|-|
+|Show report sale|get|/sales-report|-|-|-|-|
 
-### Endpoint http://localhost:3000/admin/setting
+### Endpoint role Admin
+http://localhost:3000/admin/setting
 |Name|Method |Path |Authen | Params | Query | Body |
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
 |Admin show all user|get|/show-user|-|-|-|-|

@@ -49,6 +49,7 @@ exports.beverageMenu = async (req, res, next) => {
   }
 };
 
+
 exports.getPopularMenus = async (req, res, next) => {
   try {
     // ดึงยอดขายเมนูที่มียอด count มากที่สุดจาก order_detail
@@ -62,40 +63,34 @@ exports.getPopularMenus = async (req, res, next) => {
           count: 'desc',
         },
       },
-      take: 8,
+      take: 8, // จำกัดการดึงข้อมูลเฉพาะ 5 เมนูที่ขายดีที่สุด
     });
 
+    // ดึงข้อมูลรายละเอียดเมนูแต่ละอัน ยกเว้นหมวดหมู่ Category ID = 5
     const menuItemsWithNames = await Promise.all(
       popularMenus.map(async (menu) => {
         const item = await prisma.menu_items.findUnique({
-          where: {
-            id: menu.itemId,
-            categoryId: {
-              not: 5,
-            },
-          },
+          where: { id: menu.itemId },
         });
-
-        // ดึงข้อมูลรายละเอียดการสั่งซื้อทั้งหมดจาก order_detail ที่เกี่ยวกับเมนูนี้
-        const orderDetails = await prisma.order_detail.findMany({
-          where: { itemId: menu.itemId },
-        });
-
-        return {
-          menuName: item.menuName, // ชื่อเมนู
-          image: item.image, // รูปภาพเมนู (ถ้ามี)
-          description: item.description, // รูปภาพเมนู (ถ้ามี)
-          price: item.price, // รูปภาพเมนู (ถ้ามี)
-          totalCount: menu._sum.count, // ยอดขายรวม
-          // รายละเอียดการสั่งซื้อของแต่ละออร์เดอร์
-        };
+        // ค้นหาเมนูตาม itemId ที่ได้จากผลลัพธ์ก่อนหน้า
+        // กรองเมนูที่อยู่ในหมวดหมู่ที่ไม่ต้องการ
+        if (item.categoryId !== 5) {
+          return {
+            menuName: item.menuName,
+            image: item.image,
+            description: item.description,
+            price: item.price,
+            totalCount: menu._sum.count,
+          };
+        }
       })
     );
 
+    // กรองค่า undefined ที่เกิดจากเมนูที่มี categoryId = 5
+    const filteredMenus = menuItemsWithNames.filter(menu => menu !== undefined);
 
-    res.json(menuItemsWithNames);
+    res.json(filteredMenus);
   } catch (err) {
-    next(err)
+    next(err);
   }
 };
-

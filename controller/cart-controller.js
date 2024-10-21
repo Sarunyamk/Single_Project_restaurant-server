@@ -24,8 +24,7 @@ exports.createCart = async (req, res, next) => {
         const cartId = cart?.id || existingCart.id;
 
 
-        const findCartItems = await findCartItemByItemId(items.itemId, cartId); // Make sure you pass `cartId`
-
+        const findCartItems = await findCartItemByItemId(items.itemId, cartId);
         let updatedCartItems;
         let cartItem;
 

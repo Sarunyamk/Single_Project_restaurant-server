@@ -1,7 +1,5 @@
 const createError = require("../utils/createError")
 
-const prisma = require("../config/prisma")
-
 const { getAllComment, getAllMenuSaleUnit, getAllSaleByDate } = require("../services/admin-report-service")
 
 exports.reportAllComments = async (req, res, next) => {

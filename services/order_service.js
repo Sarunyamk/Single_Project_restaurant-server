@@ -68,14 +68,6 @@ exports.createOrderFromCart = async (customerId) => {
             },
         });
 
-        // await prisma.orders.update({
-        //     where: { id: order.id },
-        //     data: {
-        //         status: 'SUCCESS', // ตั้งค่า status เป็น SUCCESS
-        //     },
-        // });
-
-
         return order;
     } catch (error) {
         throw new Error("Error creating order from cart: " + error.message);

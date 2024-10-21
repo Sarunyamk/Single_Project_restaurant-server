@@ -1,6 +1,5 @@
 
 
-const prisma = require("../config/prisma")
 const createError = require("../utils/createError")
 const { getAllUsers, updateUserRole, deleteUserByuserId } = require('../services/admin-setting-service')
 

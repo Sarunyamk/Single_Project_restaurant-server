@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { confirmPayment, getDashboardData, getOrders, updateOrderStatus, deleteOrder } = require("../controller/order-controller");
+const { getDashboardData, getOrders, updateOrderStatus, deleteOrder } = require("../controller/order-controller");
 
-router.post("/confirm-payment", confirmPayment);
+
 router.get("/dashboard", getDashboardData);
 
 
