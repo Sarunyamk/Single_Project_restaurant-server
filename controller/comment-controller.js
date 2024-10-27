@@ -1,13 +1,23 @@
 const prisma = require("../config/prisma")
 const createError = require("../utils/createError")
 
-const { getOrdersByUserId, getAllCommentByrating, getMenuItemComments } = require("../services/comment-service")
+const { getOrdersByUserId, getHistorysByUserId, getAllCommentByrating, getMenuItemComments } = require("../services/comment-service")
 
 // get orders เพื่อให้ลูกค้าคอมเมนท์ สำหรับ ออเดอร์ที่ชำระเงินแล้วเท่านั้น นาจา
 exports.getOrders = async (req, res, next) => {
     try {
         const { customerId } = req.params;
         const orders = await getOrdersByUserId(customerId);
+
+        res.json(orders);
+    } catch (err) {
+        next(err);
+    }
+};
+exports.getHistory = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const orders = await getHistorysByUserId(userId);
 
         res.json(orders);
     } catch (err) {

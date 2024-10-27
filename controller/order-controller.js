@@ -30,7 +30,6 @@ exports.getOrders = async (req, res, next) => {
         next(err)
     }
 };
-
 exports.updateOrderStatus = async (req, res, next) => {
     try {
         const { orderId } = req.params;

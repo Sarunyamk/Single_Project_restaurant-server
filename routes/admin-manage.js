@@ -10,8 +10,8 @@ router.get('/allmenu', showAllMenu)
 
 router.get('/getCategoryName', getCategoryName)
 router.post('/create-menu', uploadImage.single('image'), createMenu)
-router.patch('/edit-menu/:menuId', authenticate, updateMenu)
-router.delete('/delete-menu/:menuId', authenticate, deleteMenu)
+router.patch('/edit-menu/:menuId', updateMenu)
+router.delete('/delete-menu/:menuId', deleteMenu)
 
 
 

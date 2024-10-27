@@ -17,22 +17,30 @@ exports.getAllComment = () => {
     });
 }
 
-exports.getAllMenuSaleUnit = () => {
-
+exports.getAllMenuSaleUnit = (startDate, endDate) => {
     return prisma.menu_items.findMany({
-        select: {
-            id: true,
-            menuName: true,
-            price: true,
+        where: {
             order_detail: {
-                select: {
-                    count: true,
-                    total: true,
-                },
-            },
+                some: {
+                    order: {
+                        createdAt: {
+                            gte: new Date(startDate),
+                            lte: new Date(endDate),   // ตรวจสอบว่าแปลงเป็น Date object ถูกต้อง
+                        }
+                    }
+                }
+            }
         },
+        include: {
+            order_detail: {
+                include: {
+                    order: true
+                }
+            }
+        }
     });
-}
+};
+
 
 exports.getAllSaleByDate = (startDate, endDate) => {
     return prisma.orders.findMany({

@@ -6,6 +6,7 @@ const { authenticate } = require("../middleware/authenticate");
 
 
 router.get('/user/:customerId', getOrders);
+
 router.put('/update-comment', authenticate, updateCommentStatus);
 
 

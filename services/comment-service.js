@@ -18,9 +18,31 @@ exports.getOrdersByUserId = async (customerId) => {
                 }
             },
             comment: true  // ตรวจสอบว่ารวมข้อมูลคอมเมนต์แล้วหรือไม่
+        },
+        orderBy: {
+            createdAt: 'desc',  // เรียงลำดับตาม createdAt ในลำดับจากมากไปน้อย
         }
     });
 };
+exports.getHistorysByUserId = async (userId) => {
+    return prisma.orders.findMany({
+        where: {
+            customerId: Number(userId),
+        },
+        include: {
+            order_detail: {
+                include: {
+                    item: true,  // รวมข้อมูล item ของ order_detail
+                }
+            },
+            comment: true  // รวมข้อมูลคอมเมนต์
+        },
+        orderBy: {
+            createdAt: 'desc',  // เรียงลำดับตาม createdAt ในลำดับจากมากไปน้อย
+        }
+    });
+};
+
 
 exports.getAllCommentByrating = () => {
 

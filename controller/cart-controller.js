@@ -156,3 +156,33 @@ exports.updateCartItem = async (req, res, next) => {
     }
 };
 
+exports.getCartItemCount = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+
+        // Query เพื่อดึงรายการสินค้าทั้งหมดที่อยู่ในตะกร้าของ userId ที่กำหนด
+        const cart = await prisma.carts.findFirst({
+            where: {
+                customerId: Number(userId), // ดึงข้อมูลจากตาราง Carts โดยใช้ customerId
+                status: 'PENDING' // ดึงเฉพาะรายการที่สถานะยังเป็น PENDING
+            },
+            include: {
+                cart_Items: true // รวมข้อมูล cart_items
+            }
+        });
+
+        // ตรวจสอบว่ามีตะกร้าหรือไม่
+        if (!cart) {
+            return res.json({ count: 0 }); // ถ้าไม่มีตะกร้าสินค้า ส่งค่ากลับว่า count เท่ากับ 0
+        }
+
+        // ดึงจำนวนสินค้าจากรายการ cart_items
+        const itemCount = cart.cart_Items.reduce((total, item) => total + item.count, 0);
+
+        // ส่งจำนวนสินค้ากลับ
+        res.json({ count: itemCount });
+    } catch (err) {
+        console.error('Error fetching cart items count:', err);
+        next(err);
+    }
+};

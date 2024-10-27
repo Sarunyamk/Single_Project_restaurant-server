@@ -22,7 +22,6 @@ http://localhost:3000/auth
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
 |Register|post|/register|-|-|-|{firstname,lastname,phonenumber,address,email,password ,confirmPassword}
 |Login|post|/login|-|-|-|{ email, password }
-|Check User Role|post|/current-user|Y|-|-|-
 |Forget password|post|/forget-password|-|-|-|{ email }
 |Reset password|post|/reset-password/:token|Y|-|-|{ password }
 
@@ -32,6 +31,7 @@ http://localhost:3000/user
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
 |Show Profile User|get|-|Y|-|-|-|
 |Edit Profile User|patch|/edit-profile/:userId|Y|Y|-|{ firstname, lastname, phonenumber, address, email }
+|Order History|get|/history-order/:userId|Y|Y|-|-
 
 ### Endpoint role User-Admin 
 http://localhost:3000/menu
@@ -57,7 +57,7 @@ http://localhost:3000/comment
 http://localhost:3000/cart
 |Name|Method |Path |Authen | Params | Query | Body |
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
-|Create cart |post|-|-|-|-|{ customerId, items } |
+|Create cart |post|-|Y|-|-|{ customerId, items } |
 |Show detail cart |get|/get-cart/:userId|-|Y|-|-|
 |Update cart |patch|/update-cart_item/:cartItemId|-|Y|-|{ count, price } |
 |delete cart|delete|/delete-cart_item/:cartItemId|-|Y|-|-|
@@ -85,8 +85,8 @@ http://localhost:3000/order
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
 |Show Dashboard Order|get|/dashboard|-|-|-|-|
 |Admin show all order|get|-|-|-|-|-|
-|Admin update status order|put|/update/:orderId|-|Y|-|{ status }|
-|Admin delete order|delete|/delete/:orderId|-|Y|-|-|
+|Admin update status order|put|/update/:orderId|Y|Y|-|{ status }|
+|Admin delete order|delete|/delete/:orderId|Y|Y|-|-|
 
 ### Endpoint role Admin
 http://localhost:3000/admin/report
@@ -101,8 +101,8 @@ http://localhost:3000/admin/setting
 |Name|Method |Path |Authen | Params | Query | Body |
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
 |Admin show all user|get|/show-user|-|-|-|-|
-|Admin edit user|put|/edit-user/:userId|-|Y|-|{ newRole }|
-|Admin delete user|delete|/delete-user/:userId|-|Y|-|-|
+|Admin edit user|put|/edit-user/:userId|Y|Y|-|{ newRole }|
+|Admin delete user|delete|/delete-user/:userId|Y|Y|-|-|
 ---
 ## Note
 
