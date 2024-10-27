@@ -28,6 +28,14 @@ STRIPE_SECRET_KEY
 
 STATIC_DIR
 
+EMAIL_ADMIN
+
+EMAIL_PASS
+
+EMAIL_USER
+
+EMAIL_PASS
+
 ---
 ## ER-Diagram
 ![Project Logo](./image/Screenshot%202024-10-27%20103025.png) 
@@ -86,6 +94,11 @@ http://localhost:3000/payment
 |:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
 |Create Payment|post|/create-payment-intent|-|-|-|{ amount } |
 |Confirm Payment|post|/confirm-payment|-|-|-|{customerId } |
+### Endpoint role User
+http://localhost:3000/send-email
+|Name|Method |Path |Authen | Params | Query | Body |
+|:----: |:----:|:----:|:----:  |:----:|:----:|:----: |
+|User Send email|post|/|Y|-|-|{ email,subject,message } |
 
 ### Endpoint role Admin 
 http://localhost:3000/admin/manage

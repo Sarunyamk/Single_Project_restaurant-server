@@ -5,6 +5,8 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const app = express();
+const nodemailer = require('nodemailer');
+const bodyParser = require('body-parser');
 
 
 const handleError = require("./middleware/error");
@@ -22,6 +24,7 @@ const manageRouter = require("./routes/admin-manage");
 const settingRouter = require("./routes/admin-setting");
 const reportRouter = require("./routes/admin-report");
 const paymentRouter = require("./routes/payment");
+const sendEmailRouter = require("./routes/send-email");
 
 
 app.use(morgan("dev"));
@@ -33,6 +36,7 @@ app.use(cors({
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
     credentials: true,
 }));
+app.use(bodyParser.json());
 
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
@@ -46,6 +50,7 @@ app.use("/admin/report", reportRouter);
 app.use("/admin/setting", settingRouter);
 
 app.use("/payment", paymentRouter);
+app.use("/send-email", sendEmailRouter)
 
 
 
