@@ -2,6 +2,13 @@
 
 ---
 ###### เป็นเว็บไซต์ที่ให้บริการข้อมูลเกี่ยวกับเมนูอาหาร การลงทะเบียนผู้ใช้ และการจัดการเมนูโดยสามารถทำการสั่งซื้ออาหารได้อย่างสะดวกสบาย
+
+## SRS
+https://docs.google.com/document/d/1Y35Uwklm7vvq3T7Q6-gyoD7OrEXuinLMdXgXn1yVr40/edit?usp=sharing
+
+## Figma
+https://www.figma.com/design/nlhAjqZspKrNkgCqDVScxw/My-Single-Project?node-id=0-1&t=YYRyCS3ypEHb8wMa-1
+
 ### env guide
 PORT=3000
 
@@ -10,8 +17,20 @@ DATABASE_URL="mysql://u:pw@localhost:3306/project-restaurant"
 JWT_SECRET
 
 CLOUDINARY_NAME
+
 CLOUDINARY_API_KEY
+
 CLOUDINARY_API_SECRET
+
+STRIPE_PUBLISHABLE_KEY
+
+STRIPE_SECRET_KEY
+
+STATIC_DIR
+
+---
+## ER-Diagram
+![Project Logo](./image/Screenshot%202024-10-27%20103025.png) 
 
 ---
 ## API Documentation
