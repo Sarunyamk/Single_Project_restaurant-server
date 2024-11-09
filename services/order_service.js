@@ -2,11 +2,11 @@ const prisma = require("../config/prisma");
 
 exports.createOrderFromCart = async (customerId) => {
     try {
-        // ค้นหาข้อมูลในตาราง Cart และ Cart_Items สำหรับลูกค้าที่ชำระเงิน
+
         const cart = await prisma.carts.findFirst({
             where: {
                 customerId: customerId,
-                status: 'PENDING' // ตรวจสอบเฉพาะ cart ที่ยังไม่ได้ชำระเงิน
+                status: 'PENDING'
             },
             include: {
                 cart_Items: true,
@@ -17,12 +17,12 @@ exports.createOrderFromCart = async (customerId) => {
             throw new Error('Cart not found');
         }
 
-        // ตรวจสอบว่ามี Cart_Items หรือไม่
+
         if (cart.cart_Items.length === 0) {
             throw new Error('No items in the cart to create an order.');
         }
 
-        // สร้าง Order ใหม่จากข้อมูลใน Cart
+        //
         const order = await prisma.orders.create({
             data: {
                 customerId: cart.customerId,
@@ -32,7 +32,7 @@ exports.createOrderFromCart = async (customerId) => {
         });
 
 
-        // เพิ่มรายการ Order Detail จาก Cart_Items
+
         for (const cartItem of cart.cart_Items) {
             await prisma.order_detail.create({
                 data: {
@@ -46,7 +46,7 @@ exports.createOrderFromCart = async (customerId) => {
         }
 
 
-        // อัปเดตสถานะของ Cart เป็น SUCCESS หลังจากสร้าง order สำเร็จ
+
         await prisma.carts.update({
             where: { id: cart.id },
             data: {
@@ -54,7 +54,7 @@ exports.createOrderFromCart = async (customerId) => {
             },
         });
 
-        // ลบรายการ Cart_Items หลังจากย้ายข้อมูลไป Order Detail
+
         await prisma.cart_Items.deleteMany({
             where: { cartId: cart.id },
         });

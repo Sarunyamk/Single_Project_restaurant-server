@@ -23,6 +23,7 @@ model User {
   password         String
   resetToken       String?
   resetTokenExpiry DateTime?
+  facebookId       String?   @unique
   createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
   role             Role      @default(USER)
