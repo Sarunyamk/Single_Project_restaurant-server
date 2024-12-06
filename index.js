@@ -13,7 +13,6 @@ const handleError = require("./middleware/error");
 const notFound = require("./middleware/not-found");
 
 
-
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const menuRouter = require("./routes/menu");
